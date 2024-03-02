@@ -1,9 +1,9 @@
 <template>
   <div class="container mt-3">
     <table class="message">
-      <thead>
-        <tr>
-          <th class="no">No</th>
+      <thead class="sticky-header">
+        <tr >
+          <th class="no ">No</th>
           <th class="test">源IP地址:</th>
           <th class="test">目标IP地址:</th>
           <th class="no">Protocol:</th>
@@ -12,13 +12,13 @@
         </tr>
       </thead>
       <tbody v-for="(item, index) in dataList" :key="index">
-        <tr  @click="toggleDetails(index)">
+        <tr @click="toggleDetails(index)">
           <td class="no">{{index+1}}</td>
-          <td class="test" >{{ item['源IP地址'] }}</td>
-          <td class="test" >{{ item['目标IP地址'] }}</td>
-          <td class="no" >TCP</td>
-          <td class="no" >{{ item['Payload内容'] +20}}</td>
-          <td class="info">{{ item['info']}}</td>
+          <td class="test">{{ item['源IP地址'] }}</td>
+          <td class="test">{{ item['目标IP地址'] }}</td>
+          <td class="no">TCP</td>
+          <td class="no">{{ item['Payload内容'] +20}}</td>
+          <td class="info">{{ item['info'].substring(0, 40)+"...."}}</td>
         </tr>
         <tr v-if="expandedIndex === index">
           <td colspan="6" class="card-body details">
@@ -76,16 +76,8 @@ function toggleDetails(index) {
   border-radius: 8px; /* 圆角为8像素 */
   background-color: #f0f8ff; /* 背景颜色为浅蓝色 */
   margin-bottom: 5px; /*添加底部边距*/
-  border-collapse: collapse; /* 合并表格边框 */
 }
-
-th,
-td {
-  text-align: center; /* 表头和内容都居中对齐 */
-}
-
 .details {
-  width: 100%;
   padding: 10px; /* 内边距为10像素 */
   border: 1px solid #ccc; /* 边框为1像素宽，颜色为灰色 */
   border-radius: 5px; /* 圆角为5像素 */
@@ -124,5 +116,26 @@ td {
   background-color: #f9f9f9; /* 背景颜色为浅蓝色 */
   padding: 8px;
   margin-right: 10px;
+}
+.sticky-header {
+  position: sticky;
+  top: 0;
+  background-color: white; /* 表头背景色 */
+  z-index: 1; /* 确保表头在最上层 */
+}
+th,
+td {
+  text-align: center; /* 表头和内容都居中对齐 */
+  position: sticky;
+  top: 0; /* 让表头固定在顶部 */
+}
+th::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 1px;
+  height: 100%;
+  
 }
 </style>
