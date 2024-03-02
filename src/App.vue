@@ -11,28 +11,29 @@
           <th class="info">info:</th>
         </tr>
       </thead>
-      <tbody v-for="(item, index) in dataList" :key="index">
+      <tbody v-for="(packet, index) in dataList" :key="index">
         <tr @click="toggleDetails(index)">
           <td class="no">{{index+1}}</td>
-          <td class="test">{{ item['源IP地址'] }}</td>
-          <td class="test">{{ item['目标IP地址'] }}</td>
+          <td class="test">{{ packet['IP层']['源IP地址'] }}</td>
+          <td class="test">{{ packet['IP层']['目标IP地址'] }}</td>
           <td class="no">TCP</td>
-          <td class="no">{{ item['Payload内容'] +20}}</td>
-          <td class="info">{{ item['info'].substring(0, 40)+"...."}}</td>
+          <td class="no">{{ packet['IP层']['总长度'] +20}}</td>
+          <td class="info">Ether / IP / TCP 192.168.1.5:43416 > 20.....</td>
         </tr>
-        <tr v-if="expandedIndex === index">
-          <td colspan="6" class="card-body details">
-            <!-- 这里展示其他详细数据 -->
-            <p>源端口号: {{ dataList[expandedIndex]['源端口号'] }}</p>
-            <p>目标端口号: {{ dataList[expandedIndex]['目标端口号'] }}</p>
-            <p>Payload内容: {{ dataList[expandedIndex]['Payload内容'] }}</p>
-            <p>源MAC地址: {{ dataList[expandedIndex]['源MAC地址'] }}</p>
-            <p>目标MAC地址: {{ dataList[expandedIndex]['目标MAC地址'] }}</p>
-            <p>type: {{ dataList[expandedIndex]['type'] }}</p>
-            <p>Version: {{ dataList[expandedIndex]['Version'] }}</p>
-            <p>seq: {{ dataList[expandedIndex]['seq'] }}</p>
-            <p>info: {{ dataList[expandedIndex]['info'] }}</p>
+        <tr v-if="expandedIndex === index" >
+          <td colspan="6" class="card-body details left-align">
+            <div v-for="(fields, keyName) in packetKeys" :key="keyName" class="card mb-3 newtest" >
+              <div class="card-header newtest" @click="toggleDetailsKey(keyName)" >
+                {{ keyName }}
+              </div>
+              <div v-if="expandedKey === keyName" class="card-body" style="background-color: #59d6a6">
+                <div v-for="field in fields" :key="field" class="newtest">
+                  <p>&nbsp;&nbsp;&nbsp;&nbsp;{{ field }}:{{packet[keyName][field]}}</p>
+                </div>
+              </div>
+            </div>
           </td>
+
         </tr>
       </tbody>
     </table>
@@ -45,7 +46,13 @@ import axios from 'axios'
 
 const dataList = ref([]) // 用于存储从后端接收的数据
 const expandedIndex = ref(-1) // 用于跟踪哪个条状的详细数据被展开
-
+const packetKeys = {
+  '以太网层': ['源MAC地址', '目标MAC地址', '以太网类型'],
+  'TCP层': ['源端口号', '目标端口号', '序列号', '确认号', 'TCP标志位', '窗口大小', '校验和', '紧急指针', '选项'],
+  'IP层': ['源IP地址', '目标IP地址', 'IP版本', 'IP头部长度', '服务类型(TOS)', '总长度', '标识', '片偏移', '生存时间(TTL)', '协议', '头部校验和', '选项']
+}
+const expandedKey = ref('')
+const fields = ref([])
 // 使用onMounted生命周期钩子来在组件挂载后获取数据
 onMounted(async () => {
   fetchData()
@@ -65,6 +72,11 @@ async function fetchData() {
 function toggleDetails(index) {
   // alert("click")
   expandedIndex.value = (expandedIndex.value === index) ? -1 : index
+}
+function toggleDetailsKey(keyName) {
+  // alert(keyName)
+  expandedKey.value = (expandedKey.value === keyName) ? '' : keyName
+  // alert(expandedKey)
 }
 </script>
 
@@ -96,9 +108,7 @@ function toggleDetails(index) {
   padding: 8px;
   margin-right: 10px;
 }
-.gap{
-  margin-right: 10px;
-}
+
 .no{
   width: 50px;
   height: 100%;
@@ -129,6 +139,9 @@ td {
   position: sticky;
   top: 0; /* 让表头固定在顶部 */
 }
+.left-align {
+  text-align: left; /*左对齐*/
+}
 th::after {
   content: '';
   position: absolute;
@@ -137,5 +150,16 @@ th::after {
   width: 1px;
   height: 100%;
   
+}
+.newtest{
+  border: 1px solid #636364; /* 边框为2像素宽，颜色为浅蓝色 */
+  border-radius: 6px; /* 圆角为8像素 */
+
+  padding: 4px;
+  margin-bottom: 5px;
+}
+
+.a{
+  background-color: #59d6a6;
 }
 </style>
