@@ -1,7 +1,5 @@
 # vue-project
-<<<<<<< HEAD
 计网课设中第一次尝试使用vue与github
-=======
 
 This template should help get you started developing with Vue 3 in Vite.
 
@@ -30,4 +28,3 @@ npm run dev
 ```sh
 npm run build
 ```
->>>>>>> 9161a15 (简单实了的前端的基础显示)
